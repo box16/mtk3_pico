@@ -9,7 +9,7 @@ void blink_led(INT stacd, void *exinf)
     UINT flag_pattern;
     while (1)
     {
-        tk_wai_flg(id_switch_flag, SWITCH_ON, (TWF_ANDW | TWF_BITCLR), &flag_pattern, TMO_FEVR);
+        tk_wai_flg(id_switch_flag, SWITCH_ON, (TWF_ANDW), &flag_pattern, TMO_FEVR);
         gpio_set_val(25, 1);
         tk_dly_tsk(500);
 
