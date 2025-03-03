@@ -19,6 +19,8 @@
 #include <tk/tkernel.h>
 #include <tm/tmonitor.h>
 #include "blink_led.h"
+#include "check_switch.h"
+#include "event_flag.h"
 
 LOCAL ID id_led_task;
 LOCAL T_CTSK led_task = {
@@ -28,9 +30,20 @@ LOCAL T_CTSK led_task = {
 	.tskatr = TA_HLNG | TA_RNG3,
 };
 
+LOCAL ID id_switch_task;
+LOCAL T_CTSK switch_task = {
+	.itskpri = 10,
+	.stksz = 1024,
+	.task = check_switch,
+	.tskatr = TA_HLNG | TA_RNG3,
+};
+
 EXPORT INT usermain(void)
 {
-	tm_printf((UB *)"User program started\n");
+	id_switch_flag = tk_cre_flg(&switch_flag);
+
+	id_switch_task = tk_cre_tsk(&switch_task);
+	tk_sta_tsk(id_switch_task, 0);
 
 	id_led_task = tk_cre_tsk(&led_task);
 	tk_sta_tsk(id_led_task, 0);
