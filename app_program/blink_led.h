@@ -2,7 +2,7 @@
 extern "C"
 {
 #endif
-	void task_1(INT stacd, void *exinf);
+	void blink_led(INT stacd, void *exinf);
 #ifdef __cplusplus
 }
 #endif

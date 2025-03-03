@@ -18,13 +18,13 @@
 
 #include <tk/tkernel.h>
 #include <tm/tmonitor.h>
-#include "task1.h"
+#include "blink_led.h"
 
-LOCAL ID tskid_1;
-LOCAL T_CTSK ctsk_1 = {
+LOCAL ID id_led_task;
+LOCAL T_CTSK led_task = {
 	.itskpri = 10,
 	.stksz = 1024,
-	.task = task_1,
+	.task = blink_led,
 	.tskatr = TA_HLNG | TA_RNG3,
 };
 
@@ -32,8 +32,8 @@ EXPORT INT usermain(void)
 {
 	tm_printf((UB *)"User program started\n");
 
-	tskid_1 = tk_cre_tsk(&ctsk_1);
-	tk_sta_tsk(tskid_1, 0);
+	id_led_task = tk_cre_tsk(&led_task);
+	tk_sta_tsk(id_led_task, 0);
 
 	tk_slp_tsk(TMO_FEVR);
 	return 0;

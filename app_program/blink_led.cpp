@@ -1,8 +1,8 @@
 #include <tk/tkernel.h>
 #include <bsp/libbsp.h>
-#include "task1.h"
+#include "blink_led.h"
 
-void task_1(INT stacd, void *exinf)
+void blink_led(INT stacd, void *exinf)
 {
     /* P25 : On board LED*/
     while (1)
