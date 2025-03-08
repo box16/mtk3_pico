@@ -22,23 +22,37 @@
 #include "check_switch.h"
 #include "event_flag.h"
 
+void blink_led_wrapper(void)
+{
+    blink_led(0, nullptr);
+}
+
+void check_switch_wrapper(void)
+{
+    check_switch(0, nullptr);
+}
+
 LOCAL ID id_led_task;
 LOCAL T_CTSK led_task = {
-	.itskpri = 10,
-	.stksz = 1024,
-	.task = blink_led,
-	.tskatr = TA_HLNG | TA_RNG3,
+	nullptr,
+	(TA_HLNG | TA_RNG3),
+	blink_led_wrapper,
+	10,
+	1024,
+	nullptr
 };
 
 LOCAL ID id_switch_task;
 LOCAL T_CTSK switch_task = {
-	.itskpri = 10,
-	.stksz = 1024,
-	.task = check_switch,
-	.tskatr = TA_HLNG | TA_RNG3,
+	nullptr,
+	(TA_HLNG | TA_RNG3),
+	check_switch_wrapper,
+	10,
+	1024,
+	nullptr
 };
 
-EXPORT INT usermain(void)
+extern "C" EXPORT INT usermain(void)
 {
 	id_switch_flag = tk_cre_flg(&switch_flag);
 
