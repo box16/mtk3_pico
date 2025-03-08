@@ -7,12 +7,29 @@ void check_switch(INT stacd, void *exinf)
 {
     gpio_set_pin(22,GPIO_MODE_IN);
     BOOL is_pushed = FALSE;
+    BOOL pre_is_pushed = FALSE;
     BOOL state = FALSE;
+
     while (1)
     {
+        /*
+            前回 | 現在 | 意味        | 動き|
+            --------------------------------
+            オン | オン | 押しっぱなし | 変化なし
+            オン | オフ | 離した瞬間   | 変化なし
+            オフ | オン | 押した瞬間   | 変化あり
+            オフ | オフ | 放置         | 変化なし
+        */
         is_pushed = gpio_get_val(22);
-        if(is_pushed){
+        if(!pre_is_pushed && is_pushed){
             state = !state;
+            pre_is_pushed = TRUE;
+        }
+        else if(pre_is_pushed && !is_pushed){
+            pre_is_pushed = FALSE;
+        }
+        else{
+
         }
 
         if(state){
@@ -21,6 +38,6 @@ void check_switch(INT stacd, void *exinf)
         else{
             tk_clr_flg(id_switch_flag, 0x00);
         }
-        tk_dly_tsk(100);
+        tk_dly_tsk(50);
     }
 }
