@@ -30,6 +30,16 @@ public:
         DS_8MA = 0x2,
         DS_12MA = 0x3,
     };
+    PadControl()
+    {
+        //リセット・リセット解除
+        BOOL is_done_reset = *(_UW*)(0x4000C000 + 0x08) & (1<<8);
+        if(is_done_reset) return;
+
+        *(_UW*)(0x4000C000 + 0x00) |= (1<<8);
+        *(_UW*)(0x4000C000 + 0x00) &= ~(1<<8);
+        while (!(*(_UW*)(0x4000C000 + 0x08) & (1<<8))) {}
+    };
 
     void SetGPIO(UB pin, 
                  BOOL slew_rate=FALSE, 
@@ -81,6 +91,17 @@ public:
         LOW = 0x2,
         HIGH = 0x3
     };
+    IOBank()
+    {
+        //リセット・リセット解除
+        BOOL is_done_reset = *(_UW*)(0x4000C000 + 0x08) & (1<<5);
+        if(is_done_reset) return;
+
+        *(_UW*)(0x4000C000 + 0x00) |= (1<<5);
+        *(_UW*)(0x4000C000 + 0x00) &= ~(1<<5);
+        while (!(*(_UW*)(0x4000C000 + 0x08) & (1<<5))) {}
+    };
+
     void SetGPIOControl(UB pin,
                         UH func_select,
                         OutOver out_over=OutOver::NORMAL,
@@ -114,6 +135,17 @@ private:
     const UH INSTR_MEM0=0x048;
     const UH TXF0=0x010;
 public:
+    PIO()
+    {
+        //リセット・リセット解除
+        BOOL is_done_reset = *(_UW*)(0x4000C000 + 0x08) & (1<<10);
+        if(is_done_reset) return;
+
+        *(_UW*)(0x4000C000 + 0x00) |= (1<<10);
+        *(_UW*)(0x4000C000 + 0x00) &= ~(1<<10);
+        while (!(*(_UW*)(0x4000C000 + 0x08) & (1<<10))) {}
+    };
+
     void SetCTRL(UB enable_sm_mask=0b0000,
                  UB sm_restart_mask=0b0000,
                  UB clock_div_restart_mask=0b0000)
@@ -276,11 +308,6 @@ LOCAL UH program_instructions[] = {
 
 extern "C" EXPORT INT usermain(void)
 {
-    //リセット・リセット解除※これが決定的に重要だった...
-    *(_UW*)(0x4000C000 + 0x00) |= (1<<10);
-    *(_UW*)(0x4000C000 + 0x00) &= ~(1<<10);
-    while (!(*(_UW*)(0x4000C000 + 0x08) & (1<<10))) {}
-
     PadControl pad_control;
     pad_control.SetGPIO(16,
                         FALSE,
