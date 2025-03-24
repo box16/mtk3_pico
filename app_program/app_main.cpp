@@ -18,6 +18,8 @@
 #include <tk/tkernel.h>
 #include <bsp/libbsp.h>
 #include <sys/sysdef.h>
+#include <tm/tmonitor.h>
+
 class PadControl
 {
 private:
@@ -134,6 +136,7 @@ private:
     const UH SM0_PINCTRL=0x0DC;
     const UH INSTR_MEM0=0x048;
     const UH TXF0=0x010;
+    const UH FSTAT=0x004;
 public:
     PIO()
     {
@@ -273,13 +276,18 @@ public:
         }
     };
 
-    void SetTXF(UB sm_no=0,
+    void SetTXF(UB no=0,
                 UW value=0x00000000)
     {
-        UW address = BASE + TXF0+sm_no*4;
+        UW address = BASE + TXF0+no*4;
         *(_UW*)address = value;
     }
 
+    UW ReadFSTAT()
+    {
+        UW address = BASE + FSTAT;
+        return *(_UW*)address;
+    }
     UW ReadSMPinCtrl(UB sm_no=0)
     {
         UW address = BASE + SM0_PINCTRL+sm_no*24;
@@ -297,63 +305,85 @@ public:
         UW address = BASE + 0x040;
         return *(_UW*)address; 
     }
+
+    UW ReadDBGPADOUT()
+    {
+        UW address = BASE + 0x03c;
+        return *(_UW*)address; 
+    }
 };
+
+/*
+LOCAL UH program_instructions[] = {
+    // 1cycle:112.5nsで計算
+    0b0111000100100001, // out x 1  side 1 [1]
+    0b0001000100100100, // jmp !x 4 side 1 [1]
+    0b1011001101000010, // nop side 1 [2]
+    0b1010001101000010, // nop side 0 [2]
+    0b1010011101000010, // nop side 0 [4]
+};
+*/
 
 LOCAL UH program_instructions[] = {
-    0b1110000010000001,
-    0b1110000000000001,
-    0b0000000000000001,
+    // 1cycle:112.5nsで計算
+    0b1011111101000010, // nop side 1 [7]
+    0b1010111101000010, // nop side 0 [3]
 };
-
 
 extern "C" EXPORT INT usermain(void)
 {
+    tm_printf((UB*)"User program started\n");
+    tk_dly_tsk(1);
     PadControl pad_control;
-    pad_control.SetGPIO(16,
-                        FALSE,
-                        TRUE,
-                        FALSE,
-                        FALSE,
-                        PadControl::DriveStrength::DS_4MA,
-                        FALSE,
-                        FALSE);
+    pad_control.SetGPIO(16,TRUE,FALSE,FALSE,FALSE,PadControl::DriveStrength::DS_4MA,FALSE,FALSE);
 
     IOBank io_bank;
     io_bank.SetGPIOControl(16,6);
     
     PIO pio;
-    pio.SetInstrMem(program_instructions,3,0);
-    pio.SetSMPinCtrl(
-        3,
-        16,
-        16,
-        0,
-        0,
-        1,
-        1,
-        0);
+    pio.SetInstrMem(program_instructions, 2,0);
+
+    // pin,execを一旦保存し、out_stickyをクリア、pinでset登録してdir打ってすぐ戻す。
+    pio.SetSMPinCtrl(0, 0, 16, 0, 0, 0, 1, 0);
+    pio.SetSMExecCtrl(0,0,FALSE,0,31,FALSE,0,0,0,0,0,0);
+    pio.SetSMInstr(0,0xE081);//set pindir 1
+
+    pio.SetSMPinCtrl(0, 0, 0, 16, 0, 0, 0, 1);
     pio.SetSMExecCtrl(
-        3,
+        0,
         0x0,
         0x0,
         0x00,
-        0x02,
+        0x01,
         TRUE,
         FALSE,
         0x00,
         0x00,
         FALSE,
         FALSE,
-        FALSE
-    );
-    pio.SetSMClockDiv(3,0xFFF0,0);
+        FALSE);
+    pio.SetSMClockDiv(0,0xFFFE,0);
+    pio.SetSMShiftCtrl(0, FALSE, TRUE, TRUE, FALSE, 24, 24, TRUE, FALSE);
     pio.SetCTRL(
         0b0000,
         0b1111,
         0b1111);
     pio.SetCTRL(
-        0b1111,
+        0b0001,
         0b0000,
         0b0000);
+    pio.SetTXF(0,0xFFFFFF00);
+    while (TRUE)
+    {
+        tm_printf((UB*)"User program started\n");
+        tk_dly_tsk(1);
+        if(pio.ReadFSTAT() & 1<<24){
+            pio.SetTXF(0,0xFFFFFF00);
+            pio.SetTXF(1,0xFFFFFF00);
+            pio.SetTXF(2,0xFFFFFF00);
+            pio.SetTXF(3,0xFFFFFF00);
+        }
+    }
+    
     return 0;
 }
