@@ -3,17 +3,27 @@
 #include "blink_led.h"
 #include "event_flag.h"
 
-void blink_led(INT stacd, void *exinf)
-{
-    /* P25 : On board LED*/
-    UINT flag_pattern;
-    while (1)
+void blink_leds(INT stacd, void *exinf)
+{   
+    const UB PIN_NUM = 5;
+    static UB led_pins[PIN_NUM] = {10,12,14,19,21};
+    for(UB i=0; i<PIN_NUM; i++)
     {
-        tk_wai_flg(id_switch_flag, SWITCH_ON, (TWF_ANDW), &flag_pattern, TMO_FEVR);
-        gpio_set_val(25, 1);
-        tk_dly_tsk(500);
-
-        gpio_set_val(25, 0);
-        tk_dly_tsk(500);
+        gpio_set_pin(led_pins[i], GPIO_MODE_OUT);
     }
+
+    while (TRUE)
+    {
+        for(UB i=0; i<PIN_NUM; i++)
+        {
+            gpio_set_val(led_pins[i], 1);
+            tk_dly_tsk(100);
+        }
+        for(UB i=0; i<PIN_NUM; i++)
+        {
+            gpio_set_val(led_pins[i], 0);
+            tk_dly_tsk(100);
+        }
+    }
+    
 }
