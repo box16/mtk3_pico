@@ -6,12 +6,14 @@
 void check_switch(INT stacd, void *exinf)
 {
     gpio_set_pin(22,GPIO_MODE_IN);
-    BOOL is_pushed = FALSE;
-    BOOL pre_is_pushed = FALSE;
-    BOOL state = FALSE;
+    static BOOL is_pushed = FALSE;
+    static BOOL pre_is_pushed = FALSE;
+    static BOOL state = FALSE;
+    static UINT flag_tmp;
 
-    while (1)
+    while (TRUE)
     {
+        tk_wai_flg(id_game_flag, WAITING_PLAYER_TURN, TWF_ANDW, &flag_tmp, TMO_FEVR);
         /*
             前回 | 現在 | 意味        | 動き|
             --------------------------------
@@ -21,23 +23,16 @@ void check_switch(INT stacd, void *exinf)
             オフ | オフ | 放置         | 変化なし
         */
         is_pushed = gpio_get_val(22);
+        
         if(!pre_is_pushed && is_pushed){
-            state = !state;
+            tk_clr_flg(id_game_flag, 0);
+            tk_set_flg(id_game_flag, WAITING_SYSTEM_TURN);
             pre_is_pushed = TRUE;
         }
         else if(pre_is_pushed && !is_pushed){
             pre_is_pushed = FALSE;
         }
         else{
-
         }
-
-        if(state){
-            //tk_set_flg(id_switch_flag, SWITCH_ON);
-        }
-        else{
-            //tk_clr_flg(id_switch_flag, 0x00);
-        }
-        tk_dly_tsk(50);
     }
 }

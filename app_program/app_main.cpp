@@ -25,6 +25,11 @@ void blink_led_wrapper(void)
     blink_leds(0, nullptr);
 }
 
+void check_switch_wrapper(void)
+{
+	check_switch(0, nullptr);
+}
+
 LOCAL ID id_led_task;
 LOCAL T_CTSK led_task = {
 	nullptr,
@@ -35,13 +40,25 @@ LOCAL T_CTSK led_task = {
 	nullptr
 };
 
+LOCAL ID id_switch_task;
+LOCAL T_CTSK switch_task = {
+	nullptr,
+	(TA_HLNG | TA_RNG3),
+	check_switch_wrapper,
+	10,
+	1024,
+	nullptr
+};
+
 extern "C" EXPORT INT usermain(void)
 {
 	id_game_flag = tk_cre_flg(&game_flag);
-	tk_set_flg(id_game_flag,WAITING_SYSTEM_TURN);
-
 	id_led_task = tk_cre_tsk(&led_task);
+	id_switch_task = tk_cre_tsk(&switch_task);
+
+	tk_set_flg(id_game_flag, WAITING_SYSTEM_TURN);
 	tk_sta_tsk(id_led_task, 0);
+	tk_sta_tsk(id_switch_task, 0);
 
 	tk_slp_tsk(TMO_FEVR);
 	return 0;

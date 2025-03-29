@@ -50,5 +50,7 @@ void blink_leds(INT stacd, void *exinf)
             tk_dly_tsk(500);
         }
         gpio_set_val(25, 0);
+
+        tk_set_flg(id_game_flag, WAITING_PLAYER_TURN);
     }
 }

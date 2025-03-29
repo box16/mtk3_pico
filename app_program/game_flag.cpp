@@ -3,6 +3,7 @@
 
 ID id_game_flag;
 UINT WAITING_SYSTEM_TURN = 0x01;
+UINT WAITING_PLAYER_TURN = 0x02;
 T_CFLG  game_flag = {
         nullptr,
         TA_TFIFO | TA_WMUL,
