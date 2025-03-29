@@ -24,12 +24,7 @@
 
 void blink_led_wrapper(void)
 {
-    blink_led(0, nullptr);
-}
-
-void check_switch_wrapper(void)
-{
-    check_switch(0, nullptr);
+    blink_leds(0, nullptr);
 }
 
 LOCAL ID id_led_task;
@@ -42,23 +37,8 @@ LOCAL T_CTSK led_task = {
 	nullptr
 };
 
-LOCAL ID id_switch_task;
-LOCAL T_CTSK switch_task = {
-	nullptr,
-	(TA_HLNG | TA_RNG3),
-	check_switch_wrapper,
-	10,
-	1024,
-	nullptr
-};
-
 extern "C" EXPORT INT usermain(void)
 {
-	id_switch_flag = tk_cre_flg(&switch_flag);
-
-	id_switch_task = tk_cre_tsk(&switch_task);
-	tk_sta_tsk(id_switch_task, 0);
-
 	id_led_task = tk_cre_tsk(&led_task);
 	tk_sta_tsk(id_led_task, 0);
 

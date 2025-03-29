@@ -1,3 +1,3 @@
 #pragma once
 
-void blink_led(INT stacd, void *exinf);
+void blink_leds(INT stacd, void *exinf);
