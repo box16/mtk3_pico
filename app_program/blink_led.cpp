@@ -12,54 +12,43 @@ UW rand(UW& state)
     return state;
 }
 
-static BOOL has_been_initialized = FALSE;
-void init(const UB num,
-          const UB* pins)
-{
-    for(UB i=0; i<num; i++)
-    {
-        gpio_set_pin(pins[i], GPIO_MODE_OUT);
-    }
-    // On board LED
-    gpio_set_pin(25, GPIO_MODE_OUT);
-
-    has_been_initialized = TRUE;
-}
-
 void blink_leds(INT stacd, void *exinf)
 {
     static constexpr UB PIN_NUM = 5;
     static constexpr UB led_pins[PIN_NUM] = {10,12,14,19,21};
-    if(!has_been_initialized){
-        init(PIN_NUM,led_pins); 
+    for(UB i=0; i<PIN_NUM; i++)
+    {
+        gpio_set_pin(led_pins[i], GPIO_MODE_OUT);
     }
+    // On board LED
+    gpio_set_pin(25, GPIO_MODE_OUT);
 
     static constexpr UB NODES_MAX = 99;
     static UB nodes[NODES_MAX] = {};
     static UB now_node_num = 0;
     static UW seed = 256;
-
-    if(now_node_num >= NODES_MAX){
-        tk_ext_tsk();
-    }
-
-    UINT flag_pattern;
-    tk_wai_flg(id_game_flag, WAITING_SYSTEM_TURN, TWF_ANDW | TWF_CLR, &flag_pattern, TMO_FEVR);
-
-    UB next = rand(seed) % PIN_NUM;
-    nodes[now_node_num] = next;
-    now_node_num++;
-    gpio_set_val(25, 1);
-    tk_dly_tsk(500);
-    for(UB i=0; i<now_node_num; i++)
+    static UINT flag_tmp;
+    while (TRUE)
     {
-        UB index = nodes[i];
-        gpio_set_val(led_pins[index], 1);
+        if(now_node_num >= NODES_MAX){
+            tk_ext_tsk();
+        }
+
+        tk_wai_flg(id_game_flag, WAITING_SYSTEM_TURN, (TWF_ANDW | TWF_CLR), &flag_tmp, TMO_FEVR);
+
+        UB next = rand(seed) % PIN_NUM;
+        nodes[now_node_num] = next;
+        now_node_num++;
+        gpio_set_val(25, 1);
         tk_dly_tsk(500);
-        gpio_set_val(led_pins[index], 0);
-        tk_dly_tsk(500);
+        for(UB i=0; i<now_node_num; i++)
+        {
+            UB index = nodes[i];
+            gpio_set_val(led_pins[index], 1);
+            tk_dly_tsk(500);
+            gpio_set_val(led_pins[index], 0);
+            tk_dly_tsk(500);
+        }
+        gpio_set_val(25, 0);
     }
-    gpio_set_val(25, 0);
-    
-    tk_ext_tsk();
 }

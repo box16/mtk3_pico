@@ -37,6 +37,9 @@ LOCAL T_CTSK led_task = {
 
 extern "C" EXPORT INT usermain(void)
 {
+	id_game_flag = tk_cre_flg(&game_flag);
+	tk_set_flg(id_game_flag,WAITING_SYSTEM_TURN);
+
 	id_led_task = tk_cre_tsk(&led_task);
 	tk_sta_tsk(id_led_task, 0);
 
