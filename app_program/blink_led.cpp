@@ -43,6 +43,9 @@ void blink_leds(INT stacd, void *exinf)
         tk_ext_tsk();
     }
 
+    UINT flag_pattern;
+    tk_wai_flg(id_game_flag, WAITING_SYSTEM_TURN, TWF_ANDW | TWF_CLR, &flag_pattern, TMO_FEVR);
+
     UB next = rand(seed) % PIN_NUM;
     nodes[now_node_num] = next;
     now_node_num++;
