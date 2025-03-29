@@ -18,7 +18,7 @@
 
 #include <tk/tkernel.h>
 #include "tasks.h"
-#include "event_flag.h"
+#include "event_flags.h"
 
 void blink_led_wrapper(void)
 {

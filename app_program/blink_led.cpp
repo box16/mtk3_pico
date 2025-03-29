@@ -1,7 +1,7 @@
 #include <tk/tkernel.h>
 #include <bsp/libbsp.h>
 #include "tasks.h"
-#include "event_flag.h"
+#include "event_flags.h"
 
 UW rand(UW& state) 
 {

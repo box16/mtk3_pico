@@ -1,7 +1,7 @@
 #include <tk/tkernel.h>
 #include <bsp/libbsp.h>
 #include "tasks.h"
-#include "event_flag.h"
+#include "event_flags.h"
 
 void check_switch(INT stacd, void *exinf)
 {
@@ -33,10 +33,10 @@ void check_switch(INT stacd, void *exinf)
         }
 
         if(state){
-            tk_set_flg(id_switch_flag, SWITCH_ON);
+            //tk_set_flg(id_switch_flag, SWITCH_ON);
         }
         else{
-            tk_clr_flg(id_switch_flag, 0x00);
+            //tk_clr_flg(id_switch_flag, 0x00);
         }
         tk_dly_tsk(50);
     }
