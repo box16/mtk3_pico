@@ -17,9 +17,7 @@
  */
 
 #include <tk/tkernel.h>
-#include <tm/tmonitor.h>
-#include "blink_led.h"
-#include "check_switch.h"
+#include "tasks.h"
 #include "event_flag.h"
 
 void blink_led_wrapper(void)

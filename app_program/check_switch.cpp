@@ -1,6 +1,6 @@
 #include <tk/tkernel.h>
 #include <bsp/libbsp.h>
-#include "check_switch.h"
+#include "tasks.h"
 #include "event_flag.h"
 
 void check_switch(INT stacd, void *exinf)
