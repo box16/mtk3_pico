@@ -1,17 +1,18 @@
 #include <tk/tkernel.h>
 #include "tasks.h"
 #include "settings.h"
-#include "event_flags.h"
 
 UB NODES[NODES_MAX] = {};
 UB USER_INPUTS[NODES_MAX] = {};
 UB NOW_NODE_NUM = 0;
+ID id_show_pattern;
+ID id_wait_input;
+ID id_check_input;
 
-void show_lighting_wrapper(void)
+LOCAL void show_lighting_wrapper(void)
 {
     show_lighting_pattern(0, nullptr);
 }
-LOCAL ID id_led_task;
 LOCAL T_CTSK led_task = {
 	nullptr,
 	(TA_HLNG | TA_RNG3),
@@ -21,11 +22,10 @@ LOCAL T_CTSK led_task = {
 	nullptr
 };
 
-void check_switch_wrapper(void)
+LOCAL void check_switch_wrapper(void)
 {
 	wait_user_input(0, nullptr);
 }
-LOCAL ID id_switch_task;
 LOCAL T_CTSK switch_task = {
 	nullptr,
 	(TA_HLNG | TA_RNG3),
@@ -35,11 +35,10 @@ LOCAL T_CTSK switch_task = {
 	nullptr
 };
 
-void check_user_input_wrapper(void)
+LOCAL void check_user_input_wrapper(void)
 {
 	check_user_input(0, nullptr);
 }
-LOCAL ID id_check;
 LOCAL T_CTSK check_task = {
 	nullptr,
 	(TA_HLNG | TA_RNG3),
@@ -52,14 +51,9 @@ LOCAL T_CTSK check_task = {
 
 void control_game(INT stacd, void *exinf)
 {
-    id_game_flag = tk_cre_flg(&game_flag);
-	tk_set_flg(id_game_flag, WAITING_SYSTEM_TURN);
-
-    id_led_task = tk_cre_tsk(&led_task);
-    id_switch_task = tk_cre_tsk(&switch_task);
-	id_check = tk_cre_tsk(&check_task);
-	tk_sta_tsk(id_led_task, 0);
-	tk_sta_tsk(id_switch_task, 0);
-	tk_sta_tsk(id_check, 0);
+    id_show_pattern = tk_cre_tsk(&led_task);
+    id_wait_input = tk_cre_tsk(&switch_task);
+	id_check_input = tk_cre_tsk(&check_task);
+	tk_sta_tsk(id_show_pattern, 0);
     tk_slp_tsk(TMO_FEVR);
 }

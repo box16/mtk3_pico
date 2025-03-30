@@ -19,13 +19,12 @@
 #include <tk/tkernel.h>
 #include "tasks.h"
 
-
-void game_control_wrapper(void)
+ID id_control_game;
+LOCAL void game_control_wrapper(void)
 {
 	control_game(0, nullptr);
 }
 
-LOCAL ID id_game_control;
 LOCAL T_CTSK game_control_task = {
 	nullptr,
 	(TA_HLNG | TA_RNG3),
@@ -37,8 +36,8 @@ LOCAL T_CTSK game_control_task = {
 
 extern "C" EXPORT INT usermain(void)
 {
-	id_game_control = tk_cre_tsk(&game_control_task);
-	tk_sta_tsk(id_game_control, 0);
+	id_control_game = tk_cre_tsk(&game_control_task);
+	tk_sta_tsk(id_control_game, 0);
 
 	tk_slp_tsk(TMO_FEVR);
 	return 0;

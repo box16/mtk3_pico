@@ -2,23 +2,28 @@
 #include <bsp/libbsp.h>
 #include "tasks.h"
 #include "settings.h"
-#include "event_flags.h"
+
+static BOOL has_been_initialized = FALSE;
+LOCAL void init()
+{
+    for(UB i=0; i<UNIT_NUM; i++){
+        gpio_set_pin(SWITCHS[i],GPIO_MODE_IN);
+    }
+    has_been_initialized = TRUE;
+}
 
 void wait_user_input(INT stacd, void *exinf)
 {
-    static BOOL pre_is_pushed[UNIT_NUM];
-    static BOOL is_pushed[UNIT_NUM];
-    for(UB i=0; i<UNIT_NUM; i++){
-        gpio_set_pin(SWITCHS[i],GPIO_MODE_IN);
-        pre_is_pushed[i] = FALSE;
-        is_pushed[i] = FALSE;
+    if(!has_been_initialized)
+    {
+        init();
     }
 
-    static UINT flag_tmp;
-    static UB counter = 0;
+    BOOL pre_is_pushed[UNIT_NUM] = {FALSE};
+    BOOL is_pushed[UNIT_NUM] = {FALSE};
+    UB counter = 0;
     while (TRUE)
     {
-        tk_wai_flg(id_game_flag, WAITING_PLAYER_TURN, TWF_ANDW, &flag_tmp, TMO_FEVR);
         /*
             前回 | 現在 | 意味        | 動き|
             --------------------------------
@@ -42,9 +47,9 @@ void wait_user_input(INT stacd, void *exinf)
             }
         }
         if(counter >= NOW_NODE_NUM){
-            tk_clr_flg(id_game_flag, 0);
-            tk_set_flg(id_game_flag, WAITING_CHECK);
             counter = 0;
+            tk_sta_tsk(id_check_input,0);
+            tk_ext_tsk();
         }
     }
 }
