@@ -1,6 +1,7 @@
 #include <tk/tkernel.h>
 #include <bsp/libbsp.h>
 #include "tasks.h"
+#include "settings.h"
 #include "event_flags.h"
 
 UW rand(UW& state) 
@@ -14,17 +15,14 @@ UW rand(UW& state)
 
 void blink_leds(INT stacd, void *exinf)
 {
-    static constexpr UB PIN_NUM = 5;// 後々共通化
-    static constexpr UB led_pins[PIN_NUM] = {10,12,14,19,21};// 後々共通化
-    for(UB i=0; i<PIN_NUM; i++)
+    for(UB i=0; i<UNIT_NUM; i++)
     {
-        gpio_set_pin(led_pins[i], GPIO_MODE_OUT);
+        gpio_set_pin(LEDS[i], GPIO_MODE_OUT);
     }
     // On board LED
     gpio_set_pin(25, GPIO_MODE_OUT);
 
-    static constexpr UB NODES_MAX = 99;// 後々共通化
-    static UB nodes[NODES_MAX] = {};// 後々共通化
+    static UB nodes[NODES_MAX] = {};
     static UB now_node_num = 0;
     static UW seed = 256;
     static UINT flag_tmp;
@@ -36,7 +34,7 @@ void blink_leds(INT stacd, void *exinf)
 
         tk_wai_flg(id_game_flag, WAITING_SYSTEM_TURN, (TWF_ANDW | TWF_CLR), &flag_tmp, TMO_FEVR);
 
-        UB next = rand(seed) % PIN_NUM;
+        UB next = rand(seed) % UNIT_NUM;
         nodes[now_node_num] = next;
         now_node_num++;
         gpio_set_val(25, 1);
@@ -44,9 +42,9 @@ void blink_leds(INT stacd, void *exinf)
         for(UB i=0; i<now_node_num; i++)
         {
             UB index = nodes[i];
-            gpio_set_val(led_pins[index], 1);
+            gpio_set_val(LEDS[index], 1);
             tk_dly_tsk(500);
-            gpio_set_val(led_pins[index], 0);
+            gpio_set_val(LEDS[index], 0);
             tk_dly_tsk(500);
         }
         gpio_set_val(25, 0);
