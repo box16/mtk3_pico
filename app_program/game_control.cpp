@@ -35,7 +35,7 @@ LOCAL T_CTSK switch_task = {
 	nullptr
 };
 
-void game_control(INT stacd, void *exinf)
+void control_game(INT stacd, void *exinf)
 {
     id_game_flag = tk_cre_flg(&game_flag);
 	tk_set_flg(id_game_flag, WAITING_SYSTEM_TURN);

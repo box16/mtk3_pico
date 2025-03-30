@@ -22,7 +22,7 @@
 
 void game_control_wrapper(void)
 {
-	game_control(0, nullptr);
+	control_game(0, nullptr);
 }
 
 LOCAL ID id_game_control;
