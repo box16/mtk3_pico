@@ -31,7 +31,7 @@ void blink_leds(UB now_node_num,
 
 static BOOL has_been_initialized = FALSE;
 void init()
-{   
+{
     for(UB i=0; i<UNIT_NUM; i++)
     {
         gpio_set_pin(LEDS[i], GPIO_MODE_OUT);
@@ -43,8 +43,6 @@ void init()
 
 void show_lighting_pattern(INT stacd, void *exinf)
 {
-    static UB nodes[NODES_MAX] = {};
-    static UB now_node_num = 0;
     static UW seed = 256;
     static UINT flag_tmp;
 
@@ -54,17 +52,17 @@ void show_lighting_pattern(INT stacd, void *exinf)
 
     while (TRUE)
     {
-        if(now_node_num >= NODES_MAX){
+        if(NOW_NODE_NUM >= NODES_MAX){
             tk_ext_tsk();
         }
 
         tk_wai_flg(id_game_flag, WAITING_SYSTEM_TURN, (TWF_ANDW | TWF_CLR), &flag_tmp, TMO_FEVR);
 
         UB next = rand(seed) % UNIT_NUM;
-        nodes[now_node_num] = next;
-        now_node_num++;
+        NODES[NOW_NODE_NUM] = next;
+        NOW_NODE_NUM++;
 
-        blink_leds(now_node_num, nodes);
+        blink_leds(NOW_NODE_NUM, NODES);
         tk_set_flg(id_game_flag, WAITING_PLAYER_TURN);
     }
 }

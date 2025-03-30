@@ -14,8 +14,8 @@ void check_switch(INT stacd, void *exinf)
         is_pushed[i] = FALSE;
     }
 
-    static UB now_node_num = 0;
     static UINT flag_tmp;
+    static UB counter = 0;
     while (TRUE)
     {
         tk_wai_flg(id_game_flag, WAITING_PLAYER_TURN, TWF_ANDW, &flag_tmp, TMO_FEVR);
@@ -27,23 +27,24 @@ void check_switch(INT stacd, void *exinf)
             オフ | オン | 押した瞬間   | 変化あり
             オフ | オフ | 放置         | 変化なし
         */
-        for(UB i=0; i<UNIT_NUM; i++){
-            is_pushed[i] = gpio_get_val(SWITCHS[i]);
+        for(UB pin_index=0; pin_index<UNIT_NUM; pin_index++){
+            is_pushed[pin_index] = gpio_get_val(SWITCHS[pin_index]);
         
-            if(!pre_is_pushed[i] && is_pushed[i]){
-                pre_is_pushed[i] = TRUE;
-                now_node_num++;
+            if(!pre_is_pushed[pin_index] && is_pushed[pin_index]){
+                pre_is_pushed[pin_index] = TRUE;
+                USER_INPUTS[counter] = pin_index;
+                counter++;
             }
-            else if(pre_is_pushed[i] && !is_pushed[i]){
-                pre_is_pushed[i] = FALSE;
+            else if(pre_is_pushed[pin_index] && !is_pushed[pin_index]){
+                pre_is_pushed[pin_index] = FALSE;
             }
             else{
             }
         }
-        if(now_node_num > 5){
+        if(counter >= NOW_NODE_NUM){
             tk_clr_flg(id_game_flag, 0);
             tk_set_flg(id_game_flag, WAITING_SYSTEM_TURN);
-            now_node_num = 0;
+            counter = 0;
         }
     }
 }

@@ -3,6 +3,10 @@
 #include "settings.h"
 #include "event_flags.h"
 
+UB NODES[NODES_MAX] = {};
+UB USER_INPUTS[NODES_MAX] = {};
+UB NOW_NODE_NUM = 0;
+
 void show_lighting_wrapper(void)
 {
     show_lighting_pattern(0, nullptr);
