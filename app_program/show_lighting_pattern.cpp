@@ -29,19 +29,29 @@ void blink_leds(UB now_node_num,
     gpio_set_val(25, 0);
 }
 
-void show_lighting_pattern(INT stacd, void *exinf)
-{
+static BOOL has_been_initialized = FALSE;
+void init()
+{   
     for(UB i=0; i<UNIT_NUM; i++)
     {
         gpio_set_pin(LEDS[i], GPIO_MODE_OUT);
     }
     // On board LED
     gpio_set_pin(25, GPIO_MODE_OUT);
+    has_been_initialized = TRUE;
+}
 
+void show_lighting_pattern(INT stacd, void *exinf)
+{
     static UB nodes[NODES_MAX] = {};
     static UB now_node_num = 0;
     static UW seed = 256;
     static UINT flag_tmp;
+
+    if(!has_been_initialized){
+        init(); 
+    }
+
     while (TRUE)
     {
         if(now_node_num >= NODES_MAX){
