@@ -18,47 +18,27 @@
 
 #include <tk/tkernel.h>
 #include "tasks.h"
-#include "event_flags.h"
 
-void blink_led_wrapper(void)
+
+void game_control_wrapper(void)
 {
-    blink_leds(0, nullptr);
+	game_control(0, nullptr);
 }
 
-void check_switch_wrapper(void)
-{
-	check_switch(0, nullptr);
-}
-
-LOCAL ID id_led_task;
-LOCAL T_CTSK led_task = {
+LOCAL ID id_game_control;
+LOCAL T_CTSK game_control_task = {
 	nullptr,
 	(TA_HLNG | TA_RNG3),
-	blink_led_wrapper,
+	game_control_wrapper,
 	10,
-	1024,
-	nullptr
-};
-
-LOCAL ID id_switch_task;
-LOCAL T_CTSK switch_task = {
-	nullptr,
-	(TA_HLNG | TA_RNG3),
-	check_switch_wrapper,
-	10,
-	1024,
+	10240,
 	nullptr
 };
 
 extern "C" EXPORT INT usermain(void)
 {
-	id_game_flag = tk_cre_flg(&game_flag);
-	id_led_task = tk_cre_tsk(&led_task);
-	id_switch_task = tk_cre_tsk(&switch_task);
-
-	tk_set_flg(id_game_flag, WAITING_SYSTEM_TURN);
-	tk_sta_tsk(id_led_task, 0);
-	tk_sta_tsk(id_switch_task, 0);
+	id_game_control = tk_cre_tsk(&game_control_task);
+	tk_sta_tsk(id_game_control, 0);
 
 	tk_slp_tsk(TMO_FEVR);
 	return 0;
