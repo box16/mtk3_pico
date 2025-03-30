@@ -4,7 +4,7 @@
 #include "settings.h"
 #include "event_flags.h"
 
-void check_switch(INT stacd, void *exinf)
+void wait_user_input(INT stacd, void *exinf)
 {
     static BOOL pre_is_pushed[UNIT_NUM];
     static BOOL is_pushed[UNIT_NUM];

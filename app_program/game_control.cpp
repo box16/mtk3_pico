@@ -23,7 +23,7 @@ LOCAL T_CTSK led_task = {
 
 void check_switch_wrapper(void)
 {
-	check_switch(0, nullptr);
+	wait_user_input(0, nullptr);
 }
 LOCAL ID id_switch_task;
 LOCAL T_CTSK switch_task = {
