@@ -35,6 +35,21 @@ LOCAL T_CTSK switch_task = {
 	nullptr
 };
 
+void check_user_input_wrapper(void)
+{
+	check_user_input(0, nullptr);
+}
+LOCAL ID id_check;
+LOCAL T_CTSK check_task = {
+	nullptr,
+	(TA_HLNG | TA_RNG3),
+	check_user_input_wrapper,
+	10,
+	1024,
+	nullptr
+};
+
+
 void control_game(INT stacd, void *exinf)
 {
     id_game_flag = tk_cre_flg(&game_flag);
@@ -42,7 +57,9 @@ void control_game(INT stacd, void *exinf)
 
     id_led_task = tk_cre_tsk(&led_task);
     id_switch_task = tk_cre_tsk(&switch_task);
+	id_check = tk_cre_tsk(&check_task);
 	tk_sta_tsk(id_led_task, 0);
 	tk_sta_tsk(id_switch_task, 0);
+	tk_sta_tsk(id_check, 0);
     tk_slp_tsk(TMO_FEVR);
 }

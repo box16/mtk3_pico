@@ -6,3 +6,5 @@ extern ID id_game_flag;
 extern UINT WAITING_SYSTEM_TURN;
 extern UINT WAITING_PLAYER_TURN;
 extern T_CFLG game_flag;
+extern UINT WAITING_CHECK;
+extern UINT GAME_OVER;

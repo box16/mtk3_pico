@@ -43,7 +43,7 @@ void wait_user_input(INT stacd, void *exinf)
         }
         if(counter >= NOW_NODE_NUM){
             tk_clr_flg(id_game_flag, 0);
-            tk_set_flg(id_game_flag, WAITING_SYSTEM_TURN);
+            tk_set_flg(id_game_flag, WAITING_CHECK);
             counter = 0;
         }
     }
