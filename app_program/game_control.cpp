@@ -3,15 +3,15 @@
 #include "settings.h"
 #include "event_flags.h"
 
-void blink_led_wrapper(void)
+void show_lighting_wrapper(void)
 {
-    blink_leds(0, nullptr);
+    show_lighting_pattern(0, nullptr);
 }
 LOCAL ID id_led_task;
 LOCAL T_CTSK led_task = {
 	nullptr,
 	(TA_HLNG | TA_RNG3),
-	blink_led_wrapper,
+	show_lighting_wrapper,
 	10,
 	1024,
 	nullptr

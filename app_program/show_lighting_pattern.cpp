@@ -13,7 +13,23 @@ UW rand(UW& state)
     return state;
 }
 
-void blink_leds(INT stacd, void *exinf)
+void blink_leds(UB now_node_num,
+                UB* nodes)
+{
+    gpio_set_val(25, 1);
+    tk_dly_tsk(500);
+    for(UB i=0; i<now_node_num; i++)
+    {
+        UB index = nodes[i];
+        gpio_set_val(LEDS[index], 1);
+        tk_dly_tsk(500);
+        gpio_set_val(LEDS[index], 0);
+        tk_dly_tsk(500);
+    }
+    gpio_set_val(25, 0);
+}
+
+void show_lighting_pattern(INT stacd, void *exinf)
 {
     for(UB i=0; i<UNIT_NUM; i++)
     {
@@ -37,18 +53,8 @@ void blink_leds(INT stacd, void *exinf)
         UB next = rand(seed) % UNIT_NUM;
         nodes[now_node_num] = next;
         now_node_num++;
-        gpio_set_val(25, 1);
-        tk_dly_tsk(500);
-        for(UB i=0; i<now_node_num; i++)
-        {
-            UB index = nodes[i];
-            gpio_set_val(LEDS[index], 1);
-            tk_dly_tsk(500);
-            gpio_set_val(LEDS[index], 0);
-            tk_dly_tsk(500);
-        }
-        gpio_set_val(25, 0);
 
+        blink_leds(now_node_num, nodes);
         tk_set_flg(id_game_flag, WAITING_PLAYER_TURN);
     }
 }
