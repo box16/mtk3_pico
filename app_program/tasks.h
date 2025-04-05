@@ -9,5 +9,8 @@ void wait_user_input(INT stacd, void *exinf);
 extern ID id_check_input;
 void check_user_input(INT stacd, void *exinf);
 
+extern ID id_game_over;
+void game_over(INT stacd, void *exinf);
+
 extern ID id_control_game;
 void control_game(INT stacd, void *exinf);

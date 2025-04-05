@@ -15,7 +15,7 @@ LOCAL UW rand(UW& state)
 LOCAL void blink_leds(UB now_node_num,
                 UB* nodes)
 {
-    gpio_set_val(25, 1);
+    gpio_set_val(ON_BOARD_LED, 1);
     tk_dly_tsk(500);
     for(UB i=0; i<now_node_num; i++)
     {
@@ -25,7 +25,7 @@ LOCAL void blink_leds(UB now_node_num,
         gpio_set_val(LEDS[index], 0);
         tk_dly_tsk(500);
     }
-    gpio_set_val(25, 0);
+    gpio_set_val(ON_BOARD_LED, 0);
 }
 
 static BOOL has_been_initialized = FALSE;
@@ -36,7 +36,7 @@ LOCAL void init()
         gpio_set_pin(LEDS[i], GPIO_MODE_OUT);
     }
     // On board LED
-    gpio_set_pin(25, GPIO_MODE_OUT);
+    gpio_set_pin(ON_BOARD_LED, GPIO_MODE_OUT);
     has_been_initialized = TRUE;
 }
 
