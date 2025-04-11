@@ -12,6 +12,20 @@ LOCAL void init()
     has_been_initialized = TRUE;
 }
 
+LOCAL ID id_timer;
+LOCAL void time_up(void)
+{
+    tk_sta_tsk(id_game_over, 0);
+    tk_ter_tsk(id_wait_input);
+    tk_del_alm(id_timer);
+    return;
+}
+LOCAL T_CALM timer = {
+    nullptr,
+    TA_HLNG,
+    time_up,
+};
+
 void wait_user_input(INT stacd, void *exinf)
 {
     if(!has_been_initialized)
@@ -19,6 +33,8 @@ void wait_user_input(INT stacd, void *exinf)
         init();
     }
 
+    id_timer = tk_cre_alm(&timer);
+    tk_sta_alm(id_timer, 3000 + 1000 * NOW_NODE_NUM);
     BOOL pre_is_pushed[UNIT_NUM] = {FALSE};
     BOOL is_pushed[UNIT_NUM] = {FALSE};
     UB counter = 0;
@@ -48,6 +64,7 @@ void wait_user_input(INT stacd, void *exinf)
         }
         if(counter >= NOW_NODE_NUM){
             counter = 0;
+            tk_del_alm(id_timer);
             tk_sta_tsk(id_check_input,0);
             tk_ext_tsk();
         }

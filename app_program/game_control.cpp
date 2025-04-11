@@ -23,14 +23,14 @@ LOCAL T_CTSK led_task = {
 	nullptr
 };
 
-LOCAL void check_switch_wrapper(void)
+LOCAL void wait_user_input_wrapper(void)
 {
 	wait_user_input(0, nullptr);
 }
 LOCAL T_CTSK switch_task = {
 	nullptr,
 	(TA_HLNG | TA_RNG3),
-	check_switch_wrapper,
+	wait_user_input_wrapper,
 	10,
 	1024,
 	nullptr
