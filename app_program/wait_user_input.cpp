@@ -54,6 +54,11 @@ void wait_user_input(INT stacd, void *exinf)
             if(!pre_is_pushed[pin_index] && is_pushed[pin_index]){
                 pre_is_pushed[pin_index] = TRUE;
                 USER_INPUTS[counter] = pin_index;
+                if(pin_index != NODES[counter]){
+                    tk_del_alm(id_timer);
+                    tk_sta_tsk(id_game_over,0);
+                    tk_ext_tsk();
+                }
                 counter++;
             }
             else if(pre_is_pushed[pin_index] && !is_pushed[pin_index]){
@@ -63,9 +68,8 @@ void wait_user_input(INT stacd, void *exinf)
             }
         }
         if(counter >= NOW_NODE_NUM){
-            counter = 0;
             tk_del_alm(id_timer);
-            tk_sta_tsk(id_check_input,0);
+            tk_sta_tsk(id_show_pattern,0);
             tk_ext_tsk();
         }
     }

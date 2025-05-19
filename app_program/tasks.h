@@ -6,9 +6,6 @@ void show_lighting_pattern(INT stacd, void *exinf);
 extern ID id_wait_input;
 void wait_user_input(INT stacd, void *exinf);
 
-extern ID id_check_input;
-void check_user_input(INT stacd, void *exinf);
-
 extern ID id_game_over;
 void game_over(INT stacd, void *exinf);
 
